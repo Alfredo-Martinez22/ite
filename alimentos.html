@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alimentos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .search-bar {
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+        }
+        .logo {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 50px;
+            height: auto;
+        }
+        .galeria-container {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+        .galeria {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            height: 500px;
+            width: 100%;
+            position: relative;
+        }
+        .galeria img {
+            width: 25%;
+            transition: transform 0.5s ease;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%) scale(1);
+            opacity: 0;
+        }
+        .galeria img.active {
+            opacity: 1;
+        }
+        .galeria img:hover {
+            transform: translateX(-50%) scale(1.2);
+        }
+        .whatsapp-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .whatsapp-buttons .button-container {
+            width: calc(25% - 20px);
+            margin: 10px;
+            text-align: center;
+        }
+        .whatsapp-buttons img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: transform 0.5s ease; /* Agregamos una transición para suavizar el cambio */
+        }
+        .whatsapp-buttons img:hover {
+            transform: scale(2.1); /* Al pasar el mouse, la imagen se agranda */
+        }
+        .whatsapp-buttons .product-info {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="galeria-container">
+        <div class="galeria">
+            <img src="itel.png" alt="Imagen 1" class="active">
+            <img src="alimen.png" alt="Imagen 2">
+            <img src="logo.png" alt="Imagen 3">
+        </div>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" placeholder="Buscar..." id="searchInput" oninput="filterProducts()">
+    </div>
+
+    <div class="whatsapp-buttons" id="productContainer">
+        <!-- Los productos se cargarán aquí dinámicamente -->
+    </div>
+
+    <script>
+        // Función para cargar los productos desde el servidor
+        async function loadProducts() {
+            try {
+                const response = await fetch('alimentos.php');
+                const products = await response.json();
+
+                const productContainer = document.getElementById('productContainer');
+                productContainer.innerHTML = '';
+
+                products.forEach(product => {
+                    const productElement = document.createElement('div');
+                    productElement.className = 'button-container';
+                    productElement.dataset.productName = product.name;
+
+                    productElement.innerHTML = `
+                        <a href="${product.whatsapp_link}"><img src="${product.image}" alt="${product.name}"></a>
+                        <div class="product-info">
+                            <p>${product.name}</p>
+                            <p>Precio: ${product.price}</p>
+                        </div>
+                    `;
+
+                    productContainer.appendChild(productElement);
+                });
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        }
+
+        // Función para filtrar los productos
+        function filterProducts() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const buttonContainers = document.querySelectorAll('.whatsapp-buttons .button-container');
+
+            buttonContainers.forEach(container => {
+                const productName = container.dataset.productName.toLowerCase();
+                if (productName.includes(searchInput)) {
+                    container.style.display = 'block';
+                } else {
+                    container.style.display = 'none';
+                }
+            });
+        }
+
+        // Cargar los productos cuando la página se cargue
+        window.onload = loadProducts;
+    </script>
+     <script>
+        const galeria = document.querySelector('.galeria');
+        const imagenes = galeria.querySelectorAll('img');
+        let indiceImagen = 0;
+
+        function mostrarSiguienteImagen() {
+            imagenes[indiceImagen].classList.remove('active');
+            indiceImagen = (indiceImagen + 1) % imagenes.length;
+            imagenes[indiceImagen].classList.add('active');
+        }
+
+        setInterval(mostrarSiguienteImagen, 3000);
+
+        function filterProducts() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const buttonContainers = document.querySelectorAll('.whatsapp-buttons .button-container');
+
+            buttonContainers.forEach(container => {
+                const productName = container.dataset.productName.toLowerCase();
+                if (productName.includes(searchInput)) {
+                    container.style.display = 'block';
+                } else {
+                    container.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
